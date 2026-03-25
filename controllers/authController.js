@@ -183,6 +183,16 @@ const changePassword = async (req, res) => {
     }
 };
 
+const getAllUsers = async (req, res) => {
+    const users = await User.find().select("-password");
+
+    res.status(200).json({
+        message: "Users fetched successfully",
+        count: users.length,
+        data: users
+    });
+};
+
 
 module.exports = {
     registerUser,
@@ -190,4 +200,5 @@ module.exports = {
     getProfile,
     updateProfile,
     changePassword,
+    getAllUsers,
 };
