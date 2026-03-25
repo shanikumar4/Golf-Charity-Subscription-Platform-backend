@@ -76,6 +76,7 @@ const loginUser = async (req, res) => {
                 fullName: user.fullName,
                 email: user.email,
                 role: user.role,
+                charityPercentage: user.charityPercentage,
                 token: generateToken(user._id, user.role),
             });
 
