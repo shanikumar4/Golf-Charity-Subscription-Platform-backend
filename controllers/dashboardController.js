@@ -20,7 +20,11 @@ const getDashboard = async (req, res) => {
 
         res.json({
             subscription: user.subscription,
-            charity: user.charity,
+            // Humne yahan 'percentage' ko user model se uthakar charity details ke saath bhej diya 🔥
+            charity: user.charity ? {
+                ...user.charity.toObject(), // Charity model ka saara data (name, desc etc.)
+                percentage: user.charityPercentage || 0 // User model se percentage
+            } : null,
             scores: scoreData ? scoreData.scores : [],
             totalWinnings,
         });

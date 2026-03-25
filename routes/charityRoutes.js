@@ -13,4 +13,4 @@ router.get("/", getCharities);
 // Select charity
 router.post("/select", protect, selectCharity);
 
-module.exports = router;
+module.exports = router;  
