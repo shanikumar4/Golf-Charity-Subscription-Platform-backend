@@ -4,34 +4,37 @@ const Winner = require("../models/Winner");
 
 // 📊 User Dashboard
 const getDashboard = async (req, res) => {
-    try {
-        const userId = req.user._id;
+  try {
+    const userId = req.user._id;
 
-        // user
-        const user = await User.findById(userId).populate("charity");
+    // user
+    const user = await User.findById(userId).populate("charity");
 
-        // scores
-        const scoreData = await Score.findOne({ user: userId });
+    // scores
+    const scoreData = await Score.findOne({ user: userId });
 
-        // winnings
-        const winnings = await Winner.find({ user: userId, status: "approved" });
+    // winnings
+    const winnings = await Winner.find({ user: userId, status: "approved" });
 
-        const totalWinnings = winnings.reduce((acc, w) => acc + w.prize, 0);
+    const totalWinnings = winnings.reduce((acc, w) => acc + w.prize, 0);
 
-        res.json({
-            subscription: user.subscription,
-            // Humne yahan 'percentage' ko user model se uthakar charity details ke saath bhej diya 🔥
-            charity: user.charity ? {
-                ...user.charity.toObject(), // Charity model ka saara data (name, desc etc.)
-                percentage: user.charityPercentage || 0 // User model se percentage
-            } : null,
-            scores: scoreData ? scoreData.scores : [],
-            totalWinnings,
-        });
-
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+    // Backend Controller Fix
+    res.json({
+      subscription: user.subscription,
+      // Hum ek naya object bana rahe hain jo frontend ki sari zarurat puri karega
+      charity: user.charity ? {
+        _id: user.charity._id,
+        name: user.charity.name,
+        description: user.charity.description,
+        // Direct user model se percentage utha kar yahan daal di
+        percentage: user.charityPercentage || 0
+      } : null,
+      scores: scoreData ? scoreData.scores : [],
+      totalWinnings,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 const getWinnings = async (req, res) => {
