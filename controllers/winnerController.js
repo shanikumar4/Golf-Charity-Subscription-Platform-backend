@@ -38,8 +38,33 @@ const calculateWinners = async (req, res) => {
             }
         }
 
+        // 🔥 Global Auto Prize Math Setup
+        const config = await Config.findOne();
+        const totalPool = config ? config.activePrizePool : 0;
+        
+        if (totalPool > 0 && winners.length > 0) {
+            let match5 = winners.filter(w => w.matchCount === 5);
+            let match4 = winners.filter(w => w.matchCount === 4);
+            let match3 = winners.filter(w => w.matchCount === 3);
+
+            const pool5 = totalPool * 0.40;
+            const pool4 = totalPool * 0.35;
+            const pool3 = totalPool * 0.25;
+
+            // Distribute proportionally
+            if (match5.length > 0) {
+                for (let w of match5) { w.prize = pool5 / match5.length; await w.save(); }
+            }
+            if (match4.length > 0) {
+                for (let w of match4) { w.prize = pool4 / match4.length; await w.save(); }
+            }
+            if (match3.length > 0) {
+                for (let w of match3) { w.prize = pool3 / match3.length; await w.save(); }
+            }
+        }
+
         res.json({
-            message: "Winners calculated",
+            message: "Winners calculated and prizes geographically spread",
             totalWinners: winners.length,
             winners,
         });
@@ -134,27 +159,6 @@ const verifyProof = async (req, res) => {
 
         if (status === "approved") {
             winner.status = "approved";
-
-            // 🔥 Auto Prize Calculation
-            const config = await Config.findOne();
-            const totalPool = config ? config.activePrizePool : 0;
-            
-            if (totalPool > 0) {
-                // Find how many total winners share this tier
-                const allTierWinners = await Winner.countDocuments({
-                    draw: winner.draw,
-                    matchCount: winner.matchCount,
-                });
-
-                let tierPercentage = 0;
-                if (winner.matchCount === 5) tierPercentage = 0.40;
-                else if (winner.matchCount === 4) tierPercentage = 0.35;
-                else if (winner.matchCount === 3) tierPercentage = 0.25;
-
-                const tierPot = totalPool * tierPercentage;
-                winner.prize = allTierWinners > 0 ? (tierPot / allTierWinners) : 0;
-            }
-
         } else if (status === "rejected") {
             winner.status = "lost"; 
             winner.proofImage = null; // Clear rejected proof
