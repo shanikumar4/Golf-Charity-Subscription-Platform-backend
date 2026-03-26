@@ -14,7 +14,7 @@ app.use(cors());
 
 const allowedOrigins = [
     "http://localhost:5000", // local frontend
-    "https://golfgives-efvnren6g-shanikumar4s-projects.vercel.app/", // deploy hone ke baad replace karna
+    "https://golfgives-efvnren6g-shanikumar4s-projects.vercel.app", 
 ];
 
 app.use(
