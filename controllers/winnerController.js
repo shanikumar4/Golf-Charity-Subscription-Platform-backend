@@ -1,6 +1,7 @@
 const Score = require("../models/Score");
 const Draw = require("../models/Draw");
 const Winner = require("../models/Winner");
+const Config = require("../models/Config"); // For fetching active prize pool
 const calculateMatches = require("../utils/matchCalculator");
 
 // 🎯 Calculate Winners
@@ -133,6 +134,27 @@ const verifyProof = async (req, res) => {
 
         if (status === "approved") {
             winner.status = "approved";
+
+            // 🔥 Auto Prize Calculation
+            const config = await Config.findOne();
+            const totalPool = config ? config.activePrizePool : 0;
+            
+            if (totalPool > 0) {
+                // Find how many total winners share this tier
+                const allTierWinners = await Winner.countDocuments({
+                    draw: winner.draw,
+                    matchCount: winner.matchCount,
+                });
+
+                let tierPercentage = 0;
+                if (winner.matchCount === 5) tierPercentage = 0.40;
+                else if (winner.matchCount === 4) tierPercentage = 0.35;
+                else if (winner.matchCount === 3) tierPercentage = 0.25;
+
+                const tierPot = totalPool * tierPercentage;
+                winner.prize = allTierWinners > 0 ? (tierPot / allTierWinners) : 0;
+            }
+
         } else if (status === "rejected") {
             winner.status = "lost"; 
             winner.proofImage = null; // Clear rejected proof
