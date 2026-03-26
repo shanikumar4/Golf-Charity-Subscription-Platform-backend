@@ -26,7 +26,7 @@ const winnerSchema = new mongoose.Schema({
 
     status: {
         type: String,
-        enum: ["pending", "verified", "paid"],
+        enum: ["pending", "verified", "approved", "paid", "lost"],
         default: "pending",
     },
 }, { timestamps: true });

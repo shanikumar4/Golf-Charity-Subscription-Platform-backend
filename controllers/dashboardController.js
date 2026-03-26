@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Score = require("../models/Score");
 const Winner = require("../models/Winner");
+const Draw = require("../models/Draw");
 
 // 📊 User Dashboard
 const getDashboard = async (req, res) => {
@@ -17,6 +18,10 @@ const getDashboard = async (req, res) => {
 
     const totalWinnings = winnings.reduce((acc, w) => acc + w.prize, 0);
 
+    const latestDraw = await Draw.findOne().sort({ _id: -1 });
+    const latestResult = latestDraw ? await Winner.findOne({ user: userId, draw: latestDraw._id }).populate("draw") : null;
+    const participationHistory = await Winner.find({ user: userId }).populate("draw").sort({ createdAt: -1 });
+
     res.json({
       subscription: user.subscription,
 
@@ -31,6 +36,9 @@ const getDashboard = async (req, res) => {
 
       scores: scoreData ? scoreData.scores : [],
       totalWinnings,
+      latestDraw,
+      latestResult,
+      participationHistory
     });
 
   } catch (error) {

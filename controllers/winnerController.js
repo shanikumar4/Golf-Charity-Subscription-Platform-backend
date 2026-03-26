@@ -22,13 +22,17 @@ const calculateWinners = async (req, res) => {
                 latestDraw.winningNumbers
             );
 
-            if (matches >= 3) {
-                const winner = await Winner.create({
-                    user: userScore.user,
-                    draw: latestDraw._id,
-                    matchCount: matches,
-                });
+            const isWinner = matches >= 3;
 
+            const winner = await Winner.create({
+                user: userScore.user,
+                draw: latestDraw._id,
+                matchCount: matches,
+                prize: 0,
+                status: isWinner ? "pending" : "lost",
+            });
+
+            if (isWinner) {
                 winners.push(winner);
             }
         }
@@ -54,9 +58,9 @@ const calculatePrizes = async (req, res) => {
         let match4 = winners.filter(w => w.matchCount === 4);
         let match3 = winners.filter(w => w.matchCount === 3);
 
-        const pool5 = totalPool * 0.40;
-        const pool4 = totalPool * 0.35;
-        const pool3 = totalPool * 0.25;
+        const pool5 = (Number(totalPool) || 0) * 0.40;
+        const pool4 = (Number(totalPool) || 0) * 0.35;
+        const pool3 = (Number(totalPool) || 0) * 0.25;
 
         // distribute
         for (let w of match5) {
