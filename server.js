@@ -66,8 +66,10 @@ const adminRoutes = require("./routes/adminRoutes");
 app.use("/api/admin", adminRoutes);
 
 const dashboardRoutes = require("./routes/dashboardRoutes");
-
 app.use("/api/dashboard", dashboardRoutes);
+
+const configRoutes = require("./routes/configRoutes");
+app.use("/api/config", configRoutes);
 
 // test route
 app.get('/', (req, res) => {

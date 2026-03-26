@@ -2,6 +2,7 @@ const User = require("../models/User");
 const Score = require("../models/Score");
 const Winner = require("../models/Winner");
 const Draw = require("../models/Draw");
+const Config = require("../models/Config");
 
 // 📊 User Dashboard
 const getDashboard = async (req, res) => {
@@ -22,6 +23,9 @@ const getDashboard = async (req, res) => {
     const latestResult = latestDraw ? await Winner.findOne({ user: userId, draw: latestDraw._id }).populate("draw") : null;
     const participationHistory = await Winner.find({ user: userId }).populate("draw").sort({ createdAt: -1 });
 
+    const config = await Config.findOne();
+    const activePrizePool = config ? config.activePrizePool : 0;
+
     res.json({
       subscription: user.subscription,
 
@@ -30,7 +34,7 @@ const getDashboard = async (req, res) => {
             _id: user.charity._id,
             name: user.charity.name,
             description: user.charity.description,
-            percentage: user.charityPercentage ?? 0, // ✅ FIX
+            percentage: user.charityPercentage ?? 0, 
           }
         : null,
 
@@ -38,7 +42,8 @@ const getDashboard = async (req, res) => {
       totalWinnings,
       latestDraw,
       latestResult,
-      participationHistory
+      participationHistory,
+      activePrizePool,
     });
 
   } catch (error) {
