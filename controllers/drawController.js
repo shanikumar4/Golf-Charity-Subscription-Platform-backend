@@ -4,7 +4,9 @@ const generateDrawNumbers = require("../utils/drawGenerator");
 // 🎯 Create Draw
 const createDraw = async (req, res) => {
     try {
-        const numbers = generateDrawNumbers();
+        // TEMPORARY: Hardcoded numbers for testing winner functionality
+        // const numbers = generateDrawNumbers();
+        const numbers = [1, 2, 3, 4, 5]; // Replace these with whichever 5 numbers you want to test!
 
         const draw = await Draw.create({
             winningNumbers: numbers,
