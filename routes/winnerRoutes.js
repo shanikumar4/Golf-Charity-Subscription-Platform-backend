@@ -8,6 +8,7 @@ const {
     calculateWinners,
     calculatePrizes,
     uploadProof,
+    verifyProof,
 } = require("../controllers/winnerController");
 
 // Calculate winners
@@ -23,5 +24,8 @@ router.post(
     upload.single("image"),
     uploadProof
 );
+
+// Verify proof
+router.post("/verify", protect, verifyProof);
 
 module.exports = router;

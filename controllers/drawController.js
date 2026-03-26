@@ -30,10 +30,10 @@ const getLatestDraw = async (req, res) => {
         if (!draw) return res.json(null);
 
         const Winner = require("../models/Winner");
-        const allResults = await Winner.find({ draw: draw._id }).populate("user", "name email");
+        const allResults = await Winner.find({ draw: draw._id }).populate("user", "fullName email");
 
         const participants = allResults.length;
-        const winners = allResults.filter(w => w.matchCount >= 3).sort((a,b) => b.matchCount - a.matchCount);
+        const winners = allResults.filter(w => w.matchCount >= 3).sort((a, b) => b.matchCount - a.matchCount);
 
         res.json({
             draw,

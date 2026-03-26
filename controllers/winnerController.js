@@ -121,8 +121,38 @@ const uploadProof = async (req, res) => {
     }
 };
 
+const verifyProof = async (req, res) => {
+    try {
+        const { winnerId, status } = req.body; // 'approved' or 'rejected'
+
+        const winner = await Winner.findById(winnerId);
+
+        if (!winner) {
+            return res.status(404).json({ message: "Winner not found" });
+        }
+
+        if (status === "approved") {
+            winner.status = "approved";
+        } else if (status === "rejected") {
+            winner.status = "lost"; 
+            winner.proofImage = null; // Clear rejected proof
+        }
+
+        await winner.save();
+
+        res.json({
+            message: `Winner proof has been ${status}`,
+            winner,
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     calculateWinners,
     calculatePrizes,
     uploadProof,
+    verifyProof,
 };
