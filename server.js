@@ -14,27 +14,25 @@ app.use(cors());
 
 const allowedOrigins = [
     "http://localhost:5000", // local frontend
-    "https://golfgives-efvnren6g-shanikumar4s-projects.vercel.app", 
+    "https://golfgives-efvnren6g-shanikumar4s-projects.vercel.app",
     "golfgives-olive.vercel.app",
 ];
 
 app.use(
     cors({
         origin: function (origin, callback) {
-            // Postman ya server-to-server requests ke liye
             if (!origin) return callback(null, true);
 
             if (allowedOrigins.includes(origin)) {
-                return callback(null, true);
+                callback(null, true);
             } else {
-                return callback(new Error("CORS not allowed"));
+                console.log("Blocked Origin:", origin); // 👈 debugging
+                callback(new Error("CORS not allowed"));
             }
         },
         credentials: true,
     })
 );
-
-
 
 
 // 🔥 Routes
