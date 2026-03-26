@@ -6,7 +6,7 @@ const calculateMatches = require("../utils/matchCalculator");
 // 🎯 Calculate Winners
 const calculateWinners = async (req, res) => {
     try {
-        const latestDraw = await Draw.findOne().sort({ createdAt: -1 });
+        const latestDraw = await Draw.findOne().sort({ _id: -1 });
 
         if (!latestDraw) {
             return res.status(404).json({ message: "No draw found" });
