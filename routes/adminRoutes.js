@@ -8,9 +8,11 @@ const { addCharity } = require("../controllers/charityController");
 const {
     getAllUsers
 } = require("../controllers/authController");
+const { getAdminDashboardStats } = require('../controllers/adminController');
 
 //  Add Charity (Admin only)
 router.post("/charity", protect, admin, addCharity);
 router.get("/users", protect, admin, getAllUsers);
+router.get("/dashboard", getAdminDashboardStats);
 
 module.exports = router;
