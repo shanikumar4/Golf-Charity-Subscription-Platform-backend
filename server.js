@@ -15,8 +15,6 @@ app.use(cors());
 const allowedOrigins = [
     "http://localhost:5000", // local frontend
     "https://golfgives-efvnren6g-shanikumar4s-projects.vercel.app", 
-    "https://golfgives-lac.vercel.app",
-    "https://golfgives-shani-kumars-projects-9781bacd.vercel.app",
 ];
 
 app.use(
