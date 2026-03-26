@@ -14,17 +14,23 @@ const getDashboard = async (req, res) => {
       .populate("charity")
       .lean();
 
-    const scoreData = await Score.findOne({ user: userId });
-    const winnings = await Winner.find({ user: userId, status: "approved" });
+    const scoreData = await Score.findOne({ user: userId }).lean();
+    const winnings = await Winner.find({ user: userId, status: "approved" }).lean();
 
     const totalWinnings = winnings.reduce((acc, w) => acc + w.prize, 0);
 
-    const latestDraw = await Draw.findOne().sort({ _id: -1 });
-    const latestResult = latestDraw ? await Winner.findOne({ user: userId, draw: latestDraw._id }).populate("draw") : null;
-    const participationHistory = await Winner.find({ user: userId }).populate("draw").sort({ createdAt: -1 });
+    const latestDraw = await Draw.findOne().sort({ _id: -1 }).lean();
+    const latestResult = latestDraw ? await Winner.findOne({ user: userId, draw: latestDraw._id }).populate("draw").lean() : null;
+    const participationHistory = await Winner.find({ user: userId }).populate("draw").sort({ createdAt: -1 }).lean();
 
-    const config = await Config.findOne();
+    const config = await Config.findOne().lean();
     const activePrizePool = config ? config.activePrizePool : 0;
+
+    // Calculate total wins manually
+    const wins = participationHistory.filter(h => h.status !== "lost" && h.matchCount >= 3).length;
+
+    // Reverse scores so the latest is at index 0
+    const reversedScores = scoreData && scoreData.scores ? scoreData.scores.slice().reverse() : [];
 
     res.json({
       subscription: user.subscription,
@@ -38,8 +44,9 @@ const getDashboard = async (req, res) => {
           }
         : null,
 
-      scores: scoreData ? scoreData.scores : [],
+      scores: reversedScores,
       totalWinnings,
+      wins,
       latestDraw,
       latestResult,
       participationHistory,
@@ -56,7 +63,7 @@ const getWinnings = async (req, res) => {
     const winnings = await Winner.find({
       user: req.user._id,
       status: "approved",
-    });
+    }).lean();
 
     res.json(winnings);
 

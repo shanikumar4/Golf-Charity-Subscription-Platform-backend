@@ -160,7 +160,7 @@ const verifyProof = async (req, res) => {
         if (status === "approved") {
             winner.status = "approved";
         } else if (status === "rejected") {
-            winner.status = "lost"; 
+            winner.status = "rejected"; // Allows user to potentially re-upload
             winner.proofImage = null; // Clear rejected proof
         }
 

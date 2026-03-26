@@ -52,11 +52,15 @@ const addScore = async (req, res) => {
 // 📥 Get Scores
 const getScores = async (req, res) => {
     try {
-        const userScore = await Score.findOne({ user: req.user._id });
+        const userScore = await Score.findOne({ user: req.user._id }).lean();
 
         if (!userScore) {
             return res.json({ scores: [] });
         }
+
+        // Return scores in reversed order (newest first)
+        const sortedScores = userScore.scores ? userScore.scores.slice().reverse() : [];
+        userScore.scores = sortedScores;
 
         res.json(userScore);
 
