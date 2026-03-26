@@ -16,6 +16,8 @@ const allowedOrigins = [
     "http://localhost:5000", // local frontend
     "https://golfgives-efvnren6g-shanikumar4s-projects.vercel.app",
     "https://golfgives-olive.vercel.app",
+    "https://golfgives-fk9a.vercel.app",
+    "https://golfgives-fk9a-7nrtpjvm2-shanikumar4s-projects.vercel.app",
 ];
 
 app.use(
